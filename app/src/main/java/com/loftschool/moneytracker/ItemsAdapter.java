@@ -13,6 +13,7 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
     private List<Item> data = new ArrayList<>();
 
+
     public ItemsAdapter() {
         createData();
     }
@@ -55,6 +56,7 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
         data.add(new Item("Молоко",100));
         data.add(new Item("Хлеб",100));
         data.add(new Item("Жизнь",100));
+
     }
 
 
@@ -63,18 +65,20 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
         private final TextView title;
         private final TextView price;
+        private final String ruble;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.title);
             price = itemView.findViewById(R.id.price);
+            ruble = itemView.getContext().getResources().getString(R.string.ruble_symbol);
 
         }
 
         public void applyData(Item record) {
             title.setText(record.getTitle());
-            //String result = getString(R.string.ruble_symbol, String.valueOf(record.getPrice()));
-            price.setText(String.valueOf(record.getPrice()));
+            price.setText(String.format(ruble, String.valueOf(record.getPrice()))); //Форматирование текста, рубль
         }
+
     }
 }
