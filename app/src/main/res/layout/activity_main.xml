@@ -7,6 +7,8 @@
     android:orientation="vertical"
     tools:context="com.loftschool.moneytracker.MainActivity">
 
+
+
     <android.support.design.widget.TabLayout
         android:id="@+id/tabLayout"
         app:tabIndicatorColor="@color/yellow"
@@ -20,5 +22,7 @@
         android:background="@drawable/bg_pattern"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+
 
 </LinearLayout>
