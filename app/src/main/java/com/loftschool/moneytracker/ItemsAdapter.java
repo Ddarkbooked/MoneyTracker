@@ -14,8 +14,14 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
     private List<Item> data = new ArrayList<>();
 
 
-    public ItemsAdapter() {
-        createData();
+//    public ItemsAdapter() {
+//
+//        createData();
+//    }
+
+
+    public void setData(List<Item> data) { // Метод, задает нашему адаптеру список айтемов из вне
+        this.data = data;
     }
 
     @Override
@@ -36,28 +42,28 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
         return data.size();
     }
 
-    private void createData() {
-        data.add(new Item("Молоко",35));
-        data.add(new Item("Жизнь",1));
-        data.add(new Item("Курсы",50));
-        data.add(new Item("Хлеб",26));
-        data.add(new Item("Тот самый ужин, который я оплатил за всех потому что платил картой",600000));
-        data.add(new Item("",0));
-        data.add(new Item("Тот самый ужин",604));
-        data.add(new Item("Ракета Falcon Heavy",1));
-        data.add(new Item("Лего Тысячелетний сокол",1000000000));
-        data.add(new Item("Монитор",100));
-        data.add(new Item("MacBook Pro",100));
-        data.add(new Item("Шоколадка",1000));
-        data.add(new Item("Шкаф",100));
-        data.add(new Item("Монитор",100));
-        data.add(new Item("Ужин",100));
-        data.add(new Item("Сок",100));
-        data.add(new Item("Молоко",100));
-        data.add(new Item("Хлеб",100));
-        data.add(new Item("Жизнь",100));
-
-    }
+//    private void createData() {
+//        data.add(new Item("Молоко",35));
+//        data.add(new Item("Жизнь",1));
+//        data.add(new Item("Курсы",50));
+//        data.add(new Item("Хлеб",26));
+//        data.add(new Item("Тот самый ужин, который я оплатил за всех потому что платил картой",600000));
+//        data.add(new Item("",0));
+//        data.add(new Item("Тот самый ужин",604));
+//        data.add(new Item("Ракета Falcon Heavy",1));
+//        data.add(new Item("Лего Тысячелетний сокол",1000000000));
+//        data.add(new Item("Монитор",100));
+//        data.add(new Item("MacBook Pro",100));
+//        data.add(new Item("Шоколадка",1000));
+//        data.add(new Item("Шкаф",100));
+//        data.add(new Item("Монитор",100));
+//        data.add(new Item("Ужин",100));
+//        data.add(new Item("Сок",100));
+//        data.add(new Item("Молоко",100));
+//        data.add(new Item("Хлеб",100));
+//        data.add(new Item("Жизнь",100));
+//
+//    }
 
 
 
