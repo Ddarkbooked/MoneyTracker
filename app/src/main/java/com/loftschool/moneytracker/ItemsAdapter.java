@@ -14,9 +14,14 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
     private List<Item> data = new ArrayList<>();
 
 
-    public void setData(List<Item> data) { // Метод, задает нашему адаптеру список айтемов из вне
+    public void setData(List<Item> data) { // Метод, задает нашему адаптеру список айтемов из вне и передаем массив
         this.data = data;
-        notifyDataSetChanged();
+        notifyDataSetChanged(); // Так как набор данных изменился, то notifyDataSetChanged() все удаляет и заного по всем элементам дата пробигается и перерисовывает все данные на экране
+    }
+
+    public void addItem(Item item) {
+        data.add(0, item);
+        notifyItemInserted(0); // Не перерисовывает, а добавит новый элемент; notifyItemInserted - добавляет наверх позицию
     }
 
     @Override
@@ -78,7 +83,7 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
         public void applyData(Item item) {
             title.setText(item.name);
-            price.setText(String.format(ruble, String.valueOf(item.price))); //Форматирование текста, рубль
+            price.setText(String.format(ruble, item.price)); //Форматирование текста, рубль
         }
 
     }

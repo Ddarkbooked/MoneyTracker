@@ -8,12 +8,22 @@
     android:background="@drawable/bg_pattern"
     tools:context=".AddItemActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:id="@+id/toolbar"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:elevation="8dp"
+        android:layout_height="?android:attr/actionBarSize">
+    </android.support.v7.widget.Toolbar>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:paddingLeft="22dp"
         android:paddingRight="22dp"
         android:layout_height="68dp"
+        android:elevation="4dp"
         android:gravity="center_vertical"
         android:background="@color/white">
 
@@ -50,7 +60,6 @@
             android:text="₽" />
 
         <Button
-            android:enabled="false"
             android:id="@+id/add_btn"
             android:layout_marginLeft="22dp"
             android:background="@drawable/ic_add"
@@ -60,3 +69,11 @@
     </LinearLayout>
 
 </LinearLayout>
+
+
+<!--
+
+ android:elevation="16dp" - Отрисовка теней
+
+
+ -->
