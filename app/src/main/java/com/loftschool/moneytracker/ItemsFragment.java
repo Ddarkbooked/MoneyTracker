@@ -36,7 +36,7 @@ public class ItemsFragment extends Fragment {
 
     private static final String TYPE_KEY = "type";
 
-    private static final int ADD_ITEM_REQUEST_CODE = 123;
+    public static final int ADD_ITEM_REQUEST_CODE = 123;
 
     public static ItemsFragment createItemsFragment(String type) {
         ItemsFragment fragment = new ItemsFragment();
@@ -88,25 +88,6 @@ public class ItemsFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
-        fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//              // Неявный intent - когда мы точно не знаем какой экран или какое приложение, но мы знаем что хотим сделать. Запуск из другого приложения
-//                Intent intent = new Intent(); // Создание интента
-//                intent.setAction(Intent.ACTION_VIEW); // Параметр Action (действие), (ACTION_VIEW - для просмотра чего-то)
-//                intent.setData(Uri.parse("https://pikabu.ru")); // Вставляем данные (сайт в нашем случае)
-//                startActivity(intent); // Запуск экрана без возврата данных
-
-                // Явный intent - сразу в intent говорим какой экран открыть. Используется для того чтобы запустить компонент из нашего приложения
-                Intent intent = new Intent(getContext(), AddItemActivity.class); //GetContext() - передача контескта (откуда мы запускаем), после запятой - какой класс
-                intent.putExtra(AddItemActivity.TYPE_KEY, type);
-                //startActivity(intent); // Запуск экрана без возврата данных
-                startActivityForResult(intent, ADD_ITEM_REQUEST_CODE); // Запуск экрана с возвратом
-
-            }
-        });
-
         refresh = view.findViewById(R.id.refresh);
         refresh.setColorSchemeColors(Color.BLUE, Color.CYAN, Color.GREEN);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() { // Метод, в котором определяется когда у нас закончится рефреш и когда уберется колесо
@@ -140,7 +121,9 @@ public class ItemsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Item item = data.getParcelableExtra("item");
-            adapter.addItem(item);
+            if (item.type.equals(type)) {
+                adapter.addItem(item);
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
