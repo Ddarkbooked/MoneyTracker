@@ -1,6 +1,8 @@
 package com.loftschool.moneytracker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -14,10 +16,15 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -31,7 +38,7 @@ import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
 
-public class ItemsFragment extends Fragment {
+public class ItemsFragment extends Fragment implements ConfirmationDialogListener{
     private static final String TAG = "ItemsFragment";
 
     private static final String TYPE_KEY = "type";
@@ -62,6 +69,7 @@ public class ItemsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ItemsAdapter();
+        adapter.setListener(new AdapterListener());
 
         Bundle bundle = getArguments();
         type = bundle.getString(TYPE_KEY, Item.TYPE_EXPENSES);
@@ -87,6 +95,7 @@ public class ItemsFragment extends Fragment {
         recycler = view.findViewById(R.id.list);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
+
 
         refresh = view.findViewById(R.id.refresh);
         refresh.setColorSchemeColors(Color.BLUE, Color.CYAN, Color.GREEN);
@@ -128,131 +137,91 @@ public class ItemsFragment extends Fragment {
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
+
+    /*     ACTION MODE     */
+
+    private ActionMode actionMode = null;
+
+    @Override
+    public void removeSelectedItems() { // Получает из адаптера наши выбранные эелементы
+        for (int i = adapter.getSelectedItems().size() -1; i >= 0; i--) { // Проходимся по ним в обратном порядке (удалять нужно с конца чтобы не вывалилась ошибка)
+            adapter.remove(adapter.getSelectedItems().get(i));
+        }
+       // actionMode.finish(); // После удаления позиции завершает ActionMode
+    }
+
+    @Override
+    public void closeActionMode() {
+        actionMode.finish();
+    }
+
+
+    private class AdapterListener implements ItemsAdapterListener {
+
+        @Override
+        public void onItemClick(Item item, int position) {
+            if (isInActionMode()) {
+                toggleSelection(position);
+            }
+        }
+
+        @Override
+        public void onItemLongClick(Item item, int position) {
+            if (isInActionMode()) { // Если мы находимся уже в ActionMode то по долгому клику мы уже ничего не делаем
+                return;
+            }
+
+            actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);  // ActionMode заменяет то что у нас есть в тулбаре на другой режим, меняет пункты меню
+            toggleSelection(position);
+        }
+
+        private boolean isInActionMode() {
+            return actionMode != null;
+        }
+
+        private void toggleSelection(int position) { // По этому методу переключаем на то, что у нас item выбран
+            adapter.toggleSelection(position);
+        }
+    }
+
+    private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = new MenuInflater(getContext());
+            inflater.inflate(R.menu.items_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+            switch (item.getItemId()) {
+                case R.id.remove:
+                showDialog();
+                    break;
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            adapter.clearSelections();
+            actionMode = null;
+        }
+    };
+
+    private void showDialog() {
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        dialog.show(getFragmentManager(), "Confirmation Dialog");
+        dialog.setConfirmationDialogListener(this);
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    private void loadItems() {
-//
-//       AsyncTask<Void, Void, List<Item>> task = new AsyncTask<Void, Void, List<Item>>() {
-//
-//
-//            @Override
-//            protected void onPreExecute() {
-//                Log.d(TAG, "onPreExecute: thread name = " + Thread.currentThread().getName());
-//            }
-//
-//            @Override
-//            protected List<Item> doInBackground(Void... voids) {
-//                Log.d(TAG, "onPreExecute: thread name = " + Thread.currentThread().getName());
-//                Call<List<Item>> call = api.getItems(type);
-//            try {
-//                List<Item> items = call.execute().body();
-//                return items;
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(List<Item> items) {
-//                if (items != null) {
-//                    adapter.setData(items);
-//                }
-//            }
-//        };
-//
-//
-//       task.execute();
-//    }
-
-
-    // Thread and Handler
-
-//    private void loadItems() {
-//
-//        Log.d(TAG, "loadItems: current thread " + Thread.currentThread().getName());
-//
-//        new LoadItemsTask(new Handler(callback)).start();
-//
-//
-//    }
-//
-//    private Handler.Callback callback = new Handler.Callback() {
-//        @Override
-//        public boolean handleMessage(Message msg) {
-//
-//            if (msg.what == DATA_LOADED) {
-//                List<Item> items = (List<Item>) msg.obj;
-//                adapter.setData(items);
-//            }
-//            return true;
-//        }
-//    };
-//
-//    private final static int DATA_LOADED = 123;
-//
-//    private class LoadItemsTask implements Runnable {
-//
-//        private Thread thread;
-//        private Handler handler;
-//
-//        public LoadItemsTask(Handler handler) {
-//            thread = new Thread(this);
-//            this.handler = handler;
-//        }
-//
-//        public void start() {
-//            thread.start();
-//        }
-//
-//        @Override
-//        public void run() {
-//
-//            Log.d(TAG, "run: current thread " + Thread.currentThread().getName());
-//
-//            Call<List<Item>> call = api.getItems(type);
-//            try {
-//                List<Item> items = call.execute().body();
-//
-//                handler.obtainMessage(DATA_LOADED, items).sendToTarget();
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
-

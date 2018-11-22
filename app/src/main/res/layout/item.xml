@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/item_bg"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,16 +15,15 @@
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/colorItem"
         android:layout_weight="2"
         android:padding="@dimen/base_padding"
         android:textColor="@color/white"
         tools:text="Молоко"/>
     <TextView
         android:id="@+id/price"
+        android:background="@color/colorShadow"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@color/colorItemDark"
         android:gravity="center"
         android:padding="@dimen/base_padding"
         android:textColor="@color/white"

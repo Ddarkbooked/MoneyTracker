@@ -1,6 +1,8 @@
 package com.loftschool.moneytracker;
 
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +13,13 @@ import java.util.List;
 
 class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
+    public ActionMode actionMode;
     private List<Item> data = new ArrayList<>();
+    private ItemsAdapterListener listener = null; // Создаем переменную которая будет хранить наш listener
+
+    public void setListener(ItemsAdapterListener listener) {  // Возможность задать listener
+        this.listener = listener;
+    }
 
 
     public void setData(List<Item> data) { // Метод, задает нашему адаптеру список айтемов из вне и передаем массив
@@ -33,38 +41,47 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
     @Override
     public void onBindViewHolder(ItemsAdapter.ItemViewHolder holder, int position) {
         Item record = data.get(position);
-        holder.applyData(record);
+        holder.applyData(record, position, listener, selections.get(position, false));
     }
 
     @Override
     public int getItemCount() {
-
         return data.size();
     }
 
-//    private void createData() {
-//        data.add(new Item("Молоко",35));
-//        data.add(new Item("Жизнь",1));
-//        data.add(new Item("Курсы",50));
-//        data.add(new Item("Хлеб",26));
-//        data.add(new Item("Тот самый ужин, который я оплатил за всех потому что платил картой",600000));
-//        data.add(new Item("",0));
-//        data.add(new Item("Тот самый ужин",604));
-//        data.add(new Item("Ракета Falcon Heavy",1));
-//        data.add(new Item("Лего Тысячелетний сокол",1000000000));
-//        data.add(new Item("Монитор",100));
-//        data.add(new Item("MacBook Pro",100));
-//        data.add(new Item("Шоколадка",1000));
-//        data.add(new Item("Шкаф",100));
-//        data.add(new Item("Монитор",100));
-//        data.add(new Item("Ужин",100));
-//        data.add(new Item("Сок",100));
-//        data.add(new Item("Молоко",100));
-//        data.add(new Item("Хлеб",100));
-//        data.add(new Item("Жизнь",100));
-//
-//    }
+    private SparseBooleanArray selections = new SparseBooleanArray(); // Замена HashMap,
 
+    public void toggleSelection(int position) {
+        if (selections.get(position, false)) {
+            selections.delete(position);
+        } else {
+            selections.put(position, true);
+        }
+        notifyItemChanged(position); // Говорим адаптеру что у нас что-то поменялось
+    }
+
+    void clearSelections() { // Убираем выделения после закрытия ActionMode
+        selections.clear(); // Очищает состояния
+        notifyDataSetChanged(); // Перерисовывает
+    }
+
+    int getSelectedItemCount() { // Получить колличство выделенных элементов
+        return selections.size();
+    }
+
+    List<Integer> getSelectedItems() { // Получить позиции выделенных элементов
+        List<Integer> items = new ArrayList<>(selections.size()); // Создаем массив позиций
+        for (int i = 0; i < selections.size(); i++) { // Проходимся по selections
+            items.add(selections.keyAt(i));
+        }
+        return items;
+    }
+
+    Item remove(int pos) { // Удаляем элементы нашего списка
+        final Item item = data.remove(pos);
+        notifyItemRemoved(pos);
+        return item;
+    }
 
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -81,9 +98,30 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
         }
 
-        public void applyData(Item item) {
+        public void applyData(final Item item, final int position, final ItemsAdapterListener listener, boolean selected) {
             title.setText(item.name);
             price.setText(String.format(ruble, item.price)); //Форматирование текста, рубль
+
+            itemView.setOnClickListener(new View.OnClickListener() { // Нажатие
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) { // Если мы передали нашему адаптеру listener то
+                        listener.onItemClick(item, position); // Вызываем onItemClick
+                    }
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() { // Долгое нажатие
+                @Override
+                public boolean onLongClick(View v) {
+                    if (listener != null) { // Если мы передали нашему адаптеру listener то
+                        listener.onItemLongClick(item, position); // Вызываем onItemLongClick
+                    }
+                    return true;
+                }
+            });
+
+            itemView.setActivated(selected);
         }
 
     }
