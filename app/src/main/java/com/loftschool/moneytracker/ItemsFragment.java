@@ -1,16 +1,9 @@
 package com.loftschool.moneytracker;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.preference.PreferenceActivity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -28,15 +21,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import com.loftschool.moneytracker.api.AddItemResult;
+import com.loftschool.moneytracker.api.Api;
+
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.ContentValues.TAG;
 
 public class ItemsFragment extends Fragment implements ConfirmationDialogListener{
     private static final String TAG = "ItemsFragment";
@@ -64,6 +56,8 @@ public class ItemsFragment extends Fragment implements ConfirmationDialogListene
     private ItemsAdapter adapter;
 
     private Api api;
+    private App app;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,7 +72,9 @@ public class ItemsFragment extends Fragment implements ConfirmationDialogListene
             throw new IllegalArgumentException("Unknown type");
         }
 
-        api = ((App) getActivity().getApplication()).getApi();
+        app = (App) getActivity().getApplication();
+
+        api = app.getApi();
     }
 
 
@@ -98,7 +94,7 @@ public class ItemsFragment extends Fragment implements ConfirmationDialogListene
 
 
         refresh = view.findViewById(R.id.refresh);
-        refresh.setColorSchemeColors(Color.BLUE, Color.CYAN, Color.GREEN);
+        refresh.setColorSchemeColors(Color.GRAY);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() { // Метод, в котором определяется когда у нас закончится рефреш и когда уберется колесо
             @Override
             public void onRefresh() {
@@ -126,12 +122,33 @@ public class ItemsFragment extends Fragment implements ConfirmationDialogListene
         });
     }
 
+    private void addItem(final Item item) {
+        Call<AddItemResult> call = api.addItem(item.price, item.name, item.type);
+
+        call.enqueue(new Callback<AddItemResult>() {
+            @Override
+            public void onResponse(Call<AddItemResult> call, Response<AddItemResult> response) {
+                AddItemResult result = response.body();
+                if (result.status.equals("success")) {
+                    adapter.addItem(item); // Добавляем item в adapter
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AddItemResult> call, Throwable t) {
+
+            }
+        });
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Item item = data.getParcelableExtra("item");
             if (item.type.equals(type)) {
-                adapter.addItem(item);
+//                adapter.addItem(item);
+                addItem(item);
             }
         }
 
@@ -147,9 +164,28 @@ public class ItemsFragment extends Fragment implements ConfirmationDialogListene
     @Override
     public void removeSelectedItems() { // Получает из адаптера наши выбранные эелементы
         for (int i = adapter.getSelectedItems().size() -1; i >= 0; i--) { // Проходимся по ним в обратном порядке (удалять нужно с конца чтобы не вывалилась ошибка)
-            adapter.remove(adapter.getSelectedItems().get(i));
+            Item deleteLocalItem = adapter.remove(adapter.getSelectedItems().get(i));
+            removeSelectedItemsFromServer(deleteLocalItem);
         }
        // actionMode.finish(); // После удаления позиции завершает ActionMode
+    }
+
+    public void removeSelectedItemsFromServer(Item delItem) {
+        Call<RemoveItems> removeItemsCall = api.removeItems(delItem.getId());
+        removeItemsCall.enqueue(new Callback<RemoveItems>() {
+            @Override
+            public void onResponse(Call<RemoveItems> call, Response<RemoveItems> response) {
+                RemoveItems removeItems = response.body();
+                if (removeItems.getStatus().equals(ServerStatus.SERVER_OK)) {
+                    Log.d(TAG, "onResponse: Item was deleted from server");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RemoveItems> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override

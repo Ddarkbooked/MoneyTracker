@@ -56,4 +56,8 @@ public class Item implements Parcelable { // Serializable Дает возмож�
             return new Item[size];
         }
     };
+
+    public int getId() {
+        return id;
+    }
 }

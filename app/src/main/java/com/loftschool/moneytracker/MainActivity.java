@@ -38,13 +38,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
 
-        MainPagesAdapter adapter = new MainPagesAdapter(getSupportFragmentManager(), this);
-        viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(this);
 
         tabLayout.setupWithViewPager(viewPager);
 
-                fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +88,18 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("MainActivity", "onResume");
+
+        if (((App) getApplication()).isAuthorized()) { // Если у нас при старте MainActivity в SharedPreferences хранится какой то токен не нулевой, то мы авторизованы и делаем обычный флов
+            initTabs();
+        } else { // Если нет то переходим на экран авторизации
+            Intent intent = new Intent(this, AuthActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void initTabs() { // В нем мы авторизовываем
+        MainPagesAdapter adapter = new MainPagesAdapter(getSupportFragmentManager(), this);
+        viewPager.setAdapter(adapter);
     }
 
     @Override

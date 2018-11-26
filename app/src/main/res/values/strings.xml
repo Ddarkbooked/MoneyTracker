@@ -3,13 +3,16 @@
 
     <string name="add_item_title">Новая запись</string>
     <string name="main_screen_title">Учет бюджета</string>
-    <string name="ruble_symbol">%s₽</string>
+    <string name="ruble_symbol">%s ₽</string>
 
 
     <string name="tab_expenses">Расходы</string>
     <string name="tab_incomes">Доходы</string>
     <string name="tab_balance">Баланс</string>
-    
+    <string name="picture_intro">Картинка для лого</string>
+    <string name="money_tracker_logo">Money Tracker лого</string>
+    <string name="logo_text">Ваш незаменимый помощник \nв управлении бюджетом</string>
+
     <string-array name="tab_title">
         <item>@string/tab_expenses</item>
         <item>@string/tab_incomes</item>
