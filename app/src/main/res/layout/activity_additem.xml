@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_pattern"
+    tools:context=".AddItemActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:id="@+id/toolbar"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:elevation="8dp"
+        android:layout_height="?android:attr/actionBarSize">
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp"
+        android:layout_height="68dp"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/name"
+            android:background="@null"
+            android:hint="Название"
+            android:maxLines="1"
+            android:inputType="text"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/price"
+            android:layout_marginLeft="8dp"
+            android:background="@null"
+            android:hint="0"
+            android:gravity="right"
+            android:maxLines="1"
+            android:inputType="number"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:enabled="false"
+            android:id="@+id/ruble_symbol"
+            android:paddingLeft="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textSize="18dp"
+            android:text="₽" />
+
+        <Button
+            android:id="@+id/add_btn"
+            android:layout_marginLeft="22dp"
+            android:background="@drawable/ic_add"
+            android:layout_width="26dp"
+            android:layout_height="26dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
+
+
+<!--
+
+ android:elevation="16dp" - Отрисовка теней
+
+
+ -->

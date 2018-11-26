@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.loftschool.moneytracker"
+        applicationId "com.loftschool.moneytracker" // Отсюда берем Package Name, по нему приложения различаются в Play Market
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
@@ -14,15 +14,32 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "BASE_URL", "\"https://loftschool.com/android-api/basic/v1/\"" // Ссылка на сервер
+        }
+
+        debug {
+            buildConfigField "String", "BASE_URL", "\"https://loftschool.com/android-api/basic/v1/\"" // Ссылка на сервер
         }
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+
+
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
 }
